@@ -58,9 +58,9 @@ const ARRASTO_MIN = 55; // px para contar como um giro
  * Cada número é a espera (ms) antes de um passo. Um passo por cartão, então
  * a volta fecha exatamente onde começou. Começa rápido e freia no final.
  */
-const FREIO_FINAL = [80, 110, 150, 210, 300, 430];
-const PASSO_RAPIDO = 70;
-const ESPERA_ENTRADA = 650; // deixa o "zoom" de entrada terminar antes de girar
+const FREIO_FINAL = [115, 157, 215, 300, 430, 615];
+const PASSO_RAPIDO = 100;
+const ESPERA_ENTRADA = 150; // só confirma que ainda está na tela; o giro acompanha o "zoom" de entrada
 
 function atrasosDaIntro(n) {
   const freio = FREIO_FINAL.slice(-Math.min(n, FREIO_FINAL.length));
@@ -260,7 +260,7 @@ export default function MediaStrip({ tamanho = "amplo" }) {
         visivelRef.current = e.isIntersecting;
         setVisivel(e.isIntersecting);
       },
-      { threshold: 0.5 }
+      { threshold: 0.2 }
     );
     io.observe(el);
     return () => io.disconnect();

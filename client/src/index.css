@@ -446,3 +446,18 @@ body {
 .leaflet-tooltip.nc-tooltip::before {
   border-top-color: rgba(255, 255, 255, 0.08);
 }
+
+/* Torres "brotam" uma a uma quando a cidade muda no mapa */
+@keyframes nc-tower-pop {
+  0% { opacity: 0; transform: scale(0.2); }
+  70% { opacity: 1; transform: scale(1.18); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.nc-tower--pop .nc-tower-badge {
+  opacity: 0;
+  animation: nc-tower-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nc-tower--pop .nc-tower-badge { animation: none; opacity: 1; }
+}

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -46,10 +46,11 @@ function cityIcon(active) {
 }
 
 // Ícone de torre individual (menor, formato redondo).
-function pointIcon() {
+function pointIcon(i = 0) {
   return L.divIcon({
     className: "nc-tower-icon",
-    html: `<div class="nc-tower nc-tower--sm">
+    // atraso escalonado: as torres surgem em sequência depois do voo do mapa
+    html: `<div class="nc-tower nc-tower--sm nc-tower--pop" style="--d:${500 + i * 70}ms">
         <span class="nc-tower-badge">${towerSvg}</span>
       </div>`,
     iconSize: [26, 26],
@@ -61,7 +62,11 @@ function pointIcon() {
 // afasta o zoom até todas as torres caberem; senão, mostra todas as cidades.
 function FitBounds({ cidades, cidadeAtiva }) {
   const map = useMap();
+  const primeira = useRef(true);
   useEffect(() => {
+    // Recalcula o tamanho ANTES de voar: feito depois (com atraso), o
+    // invalidateSize interrompia o voo no meio do caminho.
+    map.invalidateSize({ animate: false });
     if (cidadeAtiva?.pontos?.length) {
       // Enquadramento simétrico em volta da cidade: a distância até a torre
       // mais afastada em cada eixo vira a "folga" dos dois lados. Assim a
@@ -77,13 +82,30 @@ function FitBounds({ cidades, cidadeAtiva }) {
         [lat - dLat, lng - dLng],
         [lat + dLat, lng + dLng]
       );
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+      // flyToBounds = voo suave até a cidade (em vez de pular direto)
+      map.flyToBounds(bounds, {
+        padding: [40, 40],
+        maxZoom: 14,
+        duration: primeira.current ? 0 : 1.8,
+        easeLinearity: 0.2
+      });
+    } else if (cidadeAtiva) {
+      // Cidade sem torres cadastradas: voa até ela (zoom de cidade), assim
+      // cada clique tem um destino próprio no mapa.
+      map.flyTo([cidadeAtiva.lat, cidadeAtiva.lng], 12.5, {
+        duration: primeira.current ? 0 : 2,
+        easeLinearity: 0.2
+      });
     } else if (cidades.length) {
       const bounds = L.latLngBounds(cidades.map((c) => [c.lat, c.lng]));
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      map.flyToBounds(bounds, {
+        padding: [50, 50],
+        maxZoom: 14,
+        duration: primeira.current ? 0 : 1.8,
+        easeLinearity: 0.2
+      });
     }
-    const t = setTimeout(() => map.invalidateSize(), 200);
-    return () => clearTimeout(t);
+    primeira.current = false;
   }, [cidades, cidadeAtiva, map]);
   return null;
 }
@@ -153,8 +175,8 @@ export default function SatelliteMap({ cidades, ativa, onSelect }) {
       ))}
 
       {/* Torres individuais da cidade ativa */}
-      {pontos.map((p) => (
-        <Marker key={p.id} position={[p.lat, p.lng]} icon={pointIcon()}>
+      {pontos.map((p, i) => (
+        <Marker key={`${cidadeAtiva.id}-${p.id}`} position={[p.lat, p.lng]} icon={pointIcon(i)}>
           <Tooltip direction="top" offset={[0, -10]} opacity={1} className="nc-tooltip">
             {p.nome}
           </Tooltip>
