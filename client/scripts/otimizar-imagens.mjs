@@ -19,7 +19,15 @@ const DIR = path.resolve("public/img");
 // e os originais (centenas de MB) não devem ir para o ar.
 const ORIGINAIS = path.resolve("midias-originais");
 
-const PERFIS = [
+// NC_QUALIDADE=alta  →  para servidor próprio (sem limite de espaço/banda do
+// Firebase): imagens maiores e com muito menos compressão.
+const ALTA = process.env.NC_QUALIDADE === "alta";
+
+const PERFIS = ALTA ? [
+  { sufixo: "", largura: 2560, qualidade: 90 },
+  { sufixo: "@md", largura: 1280, qualidade: 88 },
+  { sufixo: "@sm", largura: 640, qualidade: 88 }
+] : [
   { sufixo: "", largura: 1920, qualidade: 72 },
   { sufixo: "@md", largura: 960, qualidade: 74 },
   // Miniatura para os cartões do carrossel. Reduzir uma imagem de 960px
@@ -236,7 +244,7 @@ async function gerarRecortes() {
       await sharp(girada)
         .extract({ left: 0, top: topo, width: larguraCorte, height: altura })
         .resize({ width: p.largura, withoutEnlargement: true })
-        .webp({ quality: p.qualidade })
+        .webp({ quality: ALTA ? 92 : p.qualidade })
         .toFile(saida);
 
       const m = await sharp(saida).metadata();

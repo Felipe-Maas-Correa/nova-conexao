@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { appendFile, mkdir } from "node:fs/promises";
+import path from "node:path";
 import { plans } from "../data/plans.js";
 import { coverage } from "../data/coverage.js";
 import { testimonials } from "../data/testimonials.js";
@@ -38,7 +40,10 @@ router.get("/contact-info", (_req, res) =>
 );
 
 // Recebe formulário de suporte/contato
-router.post("/support", (req, res) => {
+// Pasta onde os contatos recebidos ficam guardados (um JSON por linha).
+const PASTA_DADOS = process.env.DATA_DIR || path.resolve("data-local");
+
+router.post("/support", async (req, res) => {
   const { nome, email, telefone, cidade, assunto, mensagem } = req.body || {};
 
   const errors = {};
@@ -52,17 +57,31 @@ router.post("/support", (req, res) => {
     return res.status(422).json({ ok: false, errors });
   }
 
-  // Em produção: enviar e-mail / gravar em CRM / notificar equipe.
   const protocolo = "NC" + Date.now().toString().slice(-8);
-  console.log("[support] novo contato", {
+  const registro = {
     protocolo,
+    recebidoEm: new Date().toISOString(),
     nome,
     email,
     telefone,
     cidade,
     assunto,
     mensagem
-  });
+  };
+  console.log("[support] novo contato", protocolo);
+
+  // Guarda em arquivo para nenhuma mensagem se perder (consulte com
+  // `cat contatos.jsonl`). Falha de gravação não pode derrubar o envio.
+  try {
+    await mkdir(PASTA_DADOS, { recursive: true });
+    await appendFile(
+      path.join(PASTA_DADOS, "contatos.jsonl"),
+      JSON.stringify(registro) + "\n"
+    );
+  } catch (e) {
+    console.error("[support] não foi possível gravar o contato:", e.message);
+    console.log("[support] dados:", registro);
+  }
 
   return res.json({
     ok: true,

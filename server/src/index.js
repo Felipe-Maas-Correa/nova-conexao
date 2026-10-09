@@ -6,7 +6,15 @@ import api from "./routes/api.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+const HOST = process.env.HOST || "0.0.0.0";
+// Aceita vários endereços separados por vírgula (ex.: com e sem "www").
+const CLIENT_ORIGIN = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim());
+
+// Atrás do Nginx: sem isto o limite de requisições enxergaria todo mundo
+// como o mesmo IP (o do próprio Nginx) e bloquearia visitantes legítimos.
+app.set("trust proxy", 1);
 
 app.use(cors({ origin: CLIENT_ORIGIN }));
 
@@ -19,6 +27,6 @@ app.get("/", (_req, res) => res.json({ service: "nova-conexao-api", ok: true }))
 
 app.use((_req, res) => res.status(404).json({ ok: false, error: "Not found" }));
 
-app.listen(PORT, () => {
-  console.log(`✅ API Nova Conexão rodando em http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`✅ API Nova Conexão rodando em http://${HOST}:${PORT}`);
 });

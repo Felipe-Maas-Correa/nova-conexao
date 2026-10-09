@@ -72,7 +72,17 @@ npm run otimizar-imagens   # redimensiona, corrige rotação e converte para Web
 npm run otimizar-videos    # comprime, remove áudio e metadados (inclui GPS)
 ```
 
+## Publicar em servidor próprio
+
+Passo a passo completo (Ubuntu + Nginx + HTTPS, troca do site antigo, mídias em
+alta qualidade e backup): **[docs/TUTORIAL-SERVIDOR.pdf](docs/TUTORIAL-SERVIDOR.pdf)**
+(versão em texto: [docs/TUTORIAL-SERVIDOR.md](docs/TUTORIAL-SERVIDOR.md)).
+Os arquivos de configuração estão em `deploy/`. Depois de instalado, atualizar
+o site é um comando: `sudo bash /opt/nova-conexao/deploy/atualizar.sh`.
+
 ## Publicar (Firebase Hosting)
+
+Alternativa, caso o site volte a ser hospedado no Firebase:
 
 ```bash
 cd client && npm run build && cd ..

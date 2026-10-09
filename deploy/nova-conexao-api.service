@@ -1,0 +1,19 @@
+# Serviço systemd da API. Copie para /etc/systemd/system/ (tutorial, passo 6).
+[Unit]
+Description=API do site Nova Conexao
+After=network.target
+
+[Service]
+Type=simple
+User=novaconexao
+WorkingDirectory=/opt/nova-conexao/server
+EnvironmentFile=/opt/nova-conexao/server/.env
+ExecStart=/usr/bin/node src/index.js
+Restart=always
+RestartSec=3
+# Pasta onde ficam os contatos recebidos (criada automaticamente)
+StateDirectory=nova-conexao
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

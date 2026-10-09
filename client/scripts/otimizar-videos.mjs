@@ -20,14 +20,24 @@ const DIR = path.resolve("public/img");
 const ORIGINAIS = path.resolve("midias-originais");
 const DURACAO_MAX = 12; // segundos
 
+// NC_QUALIDADE=alta → servidor próprio: Full HD e compressão bem mais suave.
+const ALTA = process.env.NC_QUALIDADE === "alta";
+const LARGURA = ALTA ? 1920 : 1280;
+const CRF = ALTA ? "22" : "30";
+const PRESET = ALTA ? "slower" : "slow";
+
 const mb = (b) => `${(b / 1048576).toFixed(1)} MB`;
 
 async function main() {
   await mkdir(ORIGINAIS, { recursive: true });
-  const arquivos = (await readdir(DIR)).filter((f) => /\.mp4$/i.test(f));
+  // Vídeos novos soltos em public/img + originais já arquivados (permite
+  // refazer tudo em outra qualidade a qualquer momento).
+  const soltos = (await readdir(DIR)).filter((f) => /\.mp4$/i.test(f));
+  const arquivados = (await readdir(ORIGINAIS)).filter((f) => /\.mp4$/i.test(f));
+  const arquivos = [...new Set([...soltos, ...arquivados])];
 
   if (!arquivos.length) {
-    console.log("Nada para comprimir (os vídeos já foram processados).");
+    console.log("Nada para comprimir (sem vídeos novos nem originais).");
     return;
   }
 
@@ -35,7 +45,10 @@ async function main() {
   let depois = 0;
 
   for (const arquivo of arquivos) {
-    const entrada = path.join(DIR, arquivo);
+    const veioDosOriginais = !soltos.includes(arquivo);
+    const entrada = veioDosOriginais
+      ? path.join(ORIGINAIS, arquivo)
+      : path.join(DIR, arquivo);
     const base = arquivo.replace(/\.mp4$/i, "");
     const saida = path.join(DIR, `${base}.web.mp4`);
     const poster = path.join(DIR, `${base}-poster.webp`);
@@ -52,11 +65,11 @@ async function main() {
       // Vídeos de celular guardam a localização GPS nos metadados. Sem isto
       // ela iria junto para o site e para o repositório.
       "-map_metadata", "-1",
-      "-vf", "scale='min(1280,iw)':-2,fps=24",
+      "-vf", `scale='min(${LARGURA},iw)':-2,fps=24`,
       "-c:v", "libx264",
       "-profile:v", "main",
-      "-crf", "30",
-      "-preset", "slow",
+      "-crf", CRF,
+      "-preset", PRESET,
       "-movflags", "+faststart",
       "-pix_fmt", "yuv420p",
       saida
@@ -66,7 +79,7 @@ async function main() {
     await run(ffmpegPath, [
       "-y",
       "-i", entrada,
-      "-vf", "scale='min(1280,iw)':-2",
+      "-vf", `scale='min(${LARGURA},iw)':-2`,
       "-frames:v", "1",
       poster
     ]);
@@ -77,7 +90,7 @@ async function main() {
       `${arquivo}   ${mb(tamanhoOrig)} -> ${mb(tamanhoNovo)}   (+ pôster)`
     );
 
-    await rename(entrada, path.join(ORIGINAIS, arquivo));
+    if (!veioDosOriginais) await rename(entrada, path.join(ORIGINAIS, arquivo));
     // renomeia o .web.mp4 para o nome final
     await rename(saida, path.join(DIR, `${base}.mp4`));
   }
