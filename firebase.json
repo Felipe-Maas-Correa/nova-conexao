@@ -1,0 +1,60 @@
+{
+  "hosting": {
+    "public": "client/dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "headers": [
+      {
+        "//": "Arquivos com hash no nome (index-a1b2c3.js) nunca mudam de conteúdo: pode cachear para sempre.",
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "//": "Imagens e vídeos: 1 dia. O nome não muda quando você troca a foto, então cache curto.",
+        "source": "**/*.@(jpg|jpeg|png|webp|svg|mp4|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=86400"
+          }
+        ]
+      },
+      {
+        "//": "IMPORTANTE: o HTML nunca pode ficar em cache. Ele aponta para os arquivos com hash; se ficar velho, aponta para arquivos que já foram apagados e o site abre sem estilo. A regra precisa cobrir a raiz '/', porque é o endereço que o visitante abre.",
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ]
+  }
+}

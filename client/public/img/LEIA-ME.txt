@@ -1,0 +1,74 @@
+IMAGENS E VÍDEOS DO SITE — Nova Conexão
+=======================================
+
+COMO REFERENCIAR NO CÓDIGO
+--------------------------
+Arquivo salvo em:   public/img/logo-branco.png
+É acessado como:    /img/logo-branco.png
+
+  <img src="/img/logo-branco.png" alt="Nova Conexão" />
+
+IMPORTANTE: o caminho começa em /img — NÃO inclua "public".
+
+
+PADRÃO DE NOMES
+---------------
+categoria-descricao-NN.extensao
+
+- tudo minúsculo
+- separado por hífen (sem espaços, sem acentos, sem parênteses)
+- numeração com dois dígitos: -01, -02, -03
+
+
+CATÁLOGO ATUAL
+--------------
+
+LOGOS
+  logo-branco.png .............. logo todo branco, fundo transparente
+                                 >> MELHOR OPÇÃO para o site (fundo escuro)
+  logo-principal.jpg ........... logo colorida completa, fundo branco
+  logo-fundo-escuro.jpg ........ logo branca sobre fundo escuro
+  logo-quadrado.png ............ versão quadrada, fundo branco
+  logo-quadrado.jpg ............ idem, em JPG
+
+TORRES / ANTENAS
+  torre-antena-01.jpg
+  torre-antena-02.jpg
+  torre-painel.jpg ............. painel/equipamento da antena
+
+ATENDIMENTO
+  atendimento-tecnico-01.jpg ... técnico trabalhando na van
+  atendimento-local-01.jpg
+  atendimento-local-02.jpg
+  atendimento-local-03.jpg
+
+FROTA
+  veiculo-por-do-sol.jpg ....... van da empresa em estrada rural ao pôr do sol
+                                 >> ótima candidata a imagem de destaque
+
+VÍDEOS
+  video-antena-01.mp4 ... video-antena-06.mp4
+  video-atendimento-local.mp4
+
+
+!! ATENÇÃO: OTIMIZAR ANTES DE PUBLICAR !!
+-----------------------------------------
+A pasta tem cerca de 179 MB. Isso é MUITO para um site.
+Arquivos grandes deixam o site lento e consomem dados do visitante.
+
+Metas recomendadas:
+  - Fotos: no máximo 1600px de largura e abaixo de 300 KB
+           (converter para .webp reduz bastante)
+  - Vídeos: comprimir para menos de 5 MB cada
+            Vídeos longos devem ir para o YouTube e ser incorporados.
+
+Precisam de atenção (maiores):
+  video-antena-03.mp4 .......... 39,1 MB
+  video-atendimento-local.mp4 .. 33,7 MB
+  video-antena-06.mp4 .......... 25,2 MB
+  video-antena-02.mp4 .......... 22,6 MB
+  video-antena-05.mp4 .......... 22,1 MB
+  video-antena-04.mp4 .......... 14,9 MB
+  atendimento-tecnico-01.jpg ...  5,7 MB
+  veiculo-por-do-sol.jpg .......  5,3 MB
+  torre-antena-01.jpg ..........  2,1 MB

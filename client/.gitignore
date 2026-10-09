@@ -1,0 +1,9 @@
+node_modules
+dist
+*.log
+.env
+
+# Fotos e vídeos originais (centenas de MB).
+# São a fonte para `npm run otimizar-imagens` / `otimizar-videos`;
+# guarde-os em backup, não no repositório nem no site publicado.
+midias-originais

@@ -1,0 +1,25 @@
+# Dependências e builds (gerados por `npm install` / `npm run build`)
+node_modules/
+dist/
+
+# Segredos — nunca versionar. Use server/.env.example como modelo.
+.env
+.env.*
+!.env.example
+
+# Cache local do Firebase CLI
+.firebase/
+
+# Configurações locais do editor
+.vscode/
+.idea/
+
+# Fotos e vídeos ORIGINAIS (centenas de MB). Ficam só no computador;
+# o site usa as versões otimizadas em client/public/img.
+client/midias-originais/
+
+# Logs e lixo de sistema
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
